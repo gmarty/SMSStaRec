@@ -8,7 +8,7 @@ The project is working on simple homebrew ROMs.
 
 ## How is it working?
 
-This project is based on (jsSMS)[https://github.com/gmarty/jsSMS], a Sega Master System and GameGear emulator written in JavaScript.
+This project is based on [jsSMS](https://github.com/gmarty/jsSMS), a Sega Master System and GameGear emulator written in JavaScript.
 
 The compiler looks for branches starting at each possible address of the ROM data.
 Then it follows the instructions while their order can be predicted.
