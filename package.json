@@ -1,0 +1,39 @@
+{
+  "name": "SMSStaRec",
+  "description": "An attempt to compile statically SMS/GG ROMs to pure JavaScript.",
+  "version": "0.0.1",
+  "homepage": "https://github.com/gmarty/SMSStaRec",
+  "author": {
+    "name": "Guillaume Marty",
+    "email": "edo999@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/gmarty/SMSStaRec.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gmarty/SMSStaRec/issues"
+  },
+  "licenses": [
+    {
+      "type": "GNU GPL",
+      "url": "https://raw.github.com/gmarty/SMSStaRec/master/LICENSE"
+    }
+  ],
+  "engines": {
+    "node": ">=0.6.0"
+  },
+  "dependencies": {
+    "jsSMS": "https://github.com/gmarty/jsSMS.git",
+    "grunt": "~0.3.7",
+    "grunt-closure-compiler": "~0.0.3"
+  },
+  "keywords": [
+    "Emulation",
+    "Static recompilation",
+    "SMS",
+    "Sega",
+    "Master System",
+    "GameGear"
+  ]
+}

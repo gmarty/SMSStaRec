@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+<title>SMSStaRec - An attempt to compile statically SMS/GG ROMs to pure JavaScript.</title>
+<link href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css" rel="stylesheet">
+<style>
+  html, body {
+    background: #eee;
+  }
+  .container {
+    width: 752px;
+    margin-top: 20px;
+  }
+  .content {
+    background: #fff;
+    padding: 20px;
+    margin: 0 -20px;
+    border-radius: 10px;
+  }
+  .page-header {
+    background: #f5f5f5;
+    padding: 20px 20px 10px;
+    margin: -20px -20px 20px;
+    border-radius: 10px 10px 0 0;
+    border: 0;
+  }
+  select, .btn {
+    margin: 0 5px 5px 0;
+  }
+  .alert-message {
+    width: 482px;
+  }
+  #status {
+    font-size: 120%;
+  }
+  pre.well {
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    padding: 19px;
+  }
+  footer {
+    width: 772px;
+    margin: 0 auto;
+  }
+  .com { color: #93a1a1; }
+  .lit { color: #195f91; }
+  .pun, .opn, .clo { color: #93a1a1; }
+  .fun { color: #dc322f; }
+  .str, .atv { color: #D14; }
+  .kwd, .linenums .tag { color: #1e347b; }
+  .typ, .atn, .dec, .var { color: teal; }
+  .pln { color: #48484c; }
+
+  .prettyprint {
+    padding: 8px;
+    background-color: #f7f7f9;
+    border: 1px solid #e1e1e8;
+  }
+  .prettyprint.linenums {
+    -webkit-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;
+    -moz-box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;
+    box-shadow: inset 40px 0 0 #fbfbfc, inset 41px 0 0 #ececf0;
+  }
+
+    /* Specify class=linenums on a pre to get line numbering */
+  ol.linenums {
+    margin: 0 0 0 33px; /* IE indents via margin-left */
+  }
+  ol.linenums li {
+    padding-left: 12px;
+    color: #bebec5;
+    line-height: 18px;
+    text-shadow: 0 1px 0 #fff;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="content">
+    <div class="page-header">
+      <h1>SMSStaRec <small>An attempt to compile statically SMS/GG ROMs to pure JavaScript.</small></h1>
+    </div>
+    <div class="row">
+      <div class="span5">
+        <div id="emulator"></div>
+        <div>
+          <input type="text" value="0" size="5" id="branchAddress"><br>
+          <button id="button" class="btn">Get branch</button>
+        </div>
+      </div>
+      <div class="span7">
+        <h3>Branch</h3>
+        <pre class="prettyprint well lang-js" id="branchLog">Select a rom and enter a branch starting address.</pre>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>
+  <p>© 2012  Guillaume Marty (<a href="https://github.com/gmarty">https://github.com/gmarty</a>)</p>
+</footer>
+<a href="https://github.com/gmarty/SMSStaRec"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_left_orange_ff7600.png" alt="Fork me on GitHub"></a>
+<script src="build/lib/jquery.min.js" type="text/javascript"></script>
+<script src="src/MemoryDumper.js" type="text/javascript"></script>
+<script src="src/BlockBuilder.js" type="text/javascript"></script>
+<script src="build/lib/prettify/prettify.js" type="text/javascript"></script>
+<script>
+var compiler;
+var dumper;
+var romSelect = $('<select class="input-xlarge"></select>');
+var branchLog = $('#branchLog');
+var branchAddress = $('#branchAddress');
+var button = $('#button');
+
+// ROM loading
+romSelect.change(function() {
+  loadROM();
+  //self.buttons.start.removeAttr('disabled');
+});
+
+/**
+ * Given an array of roms, build a select tag to allow game selection.
+ *
+ * @param {Object.<Array.<string>>} roms The list of roms.
+ */
+(function(roms) {
+  romSelect.children().remove();
+  $('<option>Select a ROM...</option>').appendTo(this.romSelect);
+  for (var groupName in roms) {
+    if (roms.hasOwnProperty(groupName)) {
+      var optgroup = $('<optgroup></optgroup>').
+                      attr('label', groupName),
+              length = roms[groupName].length,
+              i = 0;
+      for (; i < length; i++) {
+        $('<option>' + roms[groupName][i][0] + '</option>')
+                .attr('value', roms[groupName][i][1])
+                .appendTo(optgroup);
+      }
+      romSelect.append(optgroup);
+    }
+  }
+
+  romSelect.appendTo($('#emulator'));
+})({
+  'Homebrew Master System working': [
+    ['blockhead', 'node_modules/jsSMS/roms/homebrew/blockhead.sms'],
+    ['KunKun & KokoKun', 'node_modules/jsSMS/roms/homebrew/KunKun & KokoKun.sms'],
+    ['vg-fighter', 'node_modules/jsSMS/roms/homebrew/vg-fighter.sms'],
+  ],
+  'Homebrew Master System not working': [
+    ['Bock\'s Birthday 2011 II', 'node_modules/jsSMS/roms/homebrew/Bock\'s Birthday 2011 II.sms'],
+    ['KunKun & KokoKun 2 - Return of the Kun', 'node_modules/jsSMS/roms/homebrew/KunKun & KokoKun 2 - Return of the Kun [v0.99].sms'],
+    ['ono', 'node_modules/jsSMS/roms/homebrew/ono [v1.01].sms'],
+    ['sokoban', 'node_modules/jsSMS/roms/homebrew/sokoban.sms'],
+    ['vpoker', 'node_modules/jsSMS/roms/homebrew/vpoker.sms']
+  ],
+  'Master System': [
+    ['Alex Kidd in Miracle World', 'node_modules/jsSMS/roms/sms/Alex Kidd in Miracle World (J) [!].sms'],
+    ['Alex Kidd in High Tech World', 'node_modules/jsSMS/roms/sms/Alex Kidd in High Tech World (UE) [!].sms']
+  ],
+  'GameGear': [
+    ['Pengo', 'node_modules/jsSMS/roms/gg/Pengo (J).gg'],
+    ['Wakiyanland', 'node_modules/jsSMS/roms/gg/Wakiyarando (Wagyan Land) (J).gg'],
+    ['Kaitô Saint Tail', 'node_modules/jsSMS/roms/gg/Kyoto Saint Tale (J).gg']
+  ]
+});
+
+var loadROM = function() {
+  $.ajax({
+    url: escape(romSelect.val()),
+    xhr: function() {
+      var xhr = $.ajaxSettings.xhr();
+      if (typeof xhr.overrideMimeType !== 'undefined') {
+        // Download as binary
+        xhr.overrideMimeType('text/plain; charset=x-user-defined');
+      }
+      self.xhr = xhr;
+      return xhr;
+    },
+    complete: function(xhr, status) {
+      var i, data;
+      /*if (JSSMS.Utils.isIE()) {
+       var charCodes = JSNESBinaryToArray(xhr.responseBody).toArray();
+       data = String.fromCharCode.apply(undefined, charCodes);
+       } else {*/
+      data = xhr.responseText;
+      //}
+
+      dumper = new MemoryDumper(data);
+      compiler = new BlockBuilder(dumper.getMemory());
+    }
+  });
+};
+
+button.click(function() {
+  branchLog.children().remove();
+
+  if (compiler == undefined) {
+    branchLog.html('Select a rom first.');
+    return;
+  } else if (branchAddress.val() == '') {
+    branchLog.html('Enter the starting address of the branch.');
+    return;
+  }
+
+  var address = Number(branchAddress.val()); // So we can enter hex like '0xf3'.
+
+  if (isNaN(address)) {
+    branchLog.html('Address should be a number.');
+    return;
+  } else if (address < 0 || address > dumper.getSize()) {
+    branchLog.html('Address entered is out of bound (should be between 0 and ' + dumper.getSize() + ').');
+    return;
+  }
+
+  branchLog.html((compiler.blockToJS(compiler.parseBranch(address))).
+    replace(/\n/g, '<br>'));
+  prettyPrint();
+});
+</script>
+</body>

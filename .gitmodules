@@ -1,0 +1,3 @@
+[submodule "vendor/jsSMS"]
+	path = vendor/jsSMS
+	url = git@github.com:gmarty/jsSMS.git
