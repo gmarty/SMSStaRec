@@ -6,6 +6,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     'closure-compiler': {
 
+      // BlockBuilder.js not ready for minification.
       BlockBuilder_debug: {
         js: [
           'src/exports/exports.js',
@@ -54,6 +55,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'closure-compiler');
+  grunt.registerTask('default', 'closure-compiler:MemoryDumper_debug closure-compiler:MemoryDumper_prod');
 
 };

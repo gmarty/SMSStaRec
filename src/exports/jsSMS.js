@@ -1,0 +1,10 @@
+// Required exports
+window['JSSMS'] = JSSMS;
+window['JSSMS'].prototype['readRomDirectly'] = JSSMS.prototype.readRomDirectly;
+window['JSSMS'].prototype['reset'] = JSSMS.prototype.reset;
+window['JSSMS'].prototype['start'] = JSSMS.prototype.start;
+window['JSSMS'].prototype['start'] = JSSMS.prototype.start;
+window['JSSMS']['Vdp'] = JSSMS.Vdp;
+window['JSSMS']['Vdp'].prototype['forceFullRedraw'] = JSSMS.Vdp.prototype.forceFullRedraw;
+jQuery.fn['JSSMSUI'] = jQuery.fn.JSSMSUI;
+jQuery.fn['JSSMSUI'].prototype['enable'] = jQuery.fn.JSSMSUI.prototype.enable;

@@ -84,7 +84,7 @@ var OP_STATES = [
 var BlockBuilder = function(readMem) {
   this.readMem = readMem;
 
-  this.debugLevel = 2;
+  this.debugLevel = 0;
 
   // Enable or disable various optimizations.
   this.optimizations = {
@@ -153,10 +153,15 @@ BlockBuilder.prototype.parseInst = function(opcode) {
 
   this.tstatesDecrementVal += tstatesDecremetValue;
 
+  if (this.debugLevel >= 1) {
   preinst.push('l(\'pc: ' + this.toHex(this.pc) + ',\t' +
       'opcode: ' + this.toHex(opcode) + ',\t' +
       'tstates: \' + this.tstates + \',\t' +
       'cyclesTo: \' + cyclesTo);');
+  } else {
+    preinst.push('// pc: ' + this.toHex(this.pc) + ',\t' +
+      'opcode: ' + this.toHex(opcode));
+  }
 
   // Inline EI_inst optimization.
   if (Setup.ACCURATE_INTERRUPT_EMULATION) {
