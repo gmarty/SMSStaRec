@@ -6,8 +6,8 @@
 
 'use strict';
 
-var BlockBuilder = require('./src/BlockBuilder.js'),
-    MemoryDumper = require('./src/MemoryDumper.js'),
+var BlockBuilder = require('./../src/BlockBuilder.js'),
+    MemoryDumper = require('./../src/MemoryDumper.js'),
     fs = require('fs'),
     path = require('path'),
     argv = process.argv;
