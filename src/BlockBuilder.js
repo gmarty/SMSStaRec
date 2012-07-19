@@ -12,6 +12,11 @@
  *      Statically check this.EI_inst and don't test interrupt if true.
  *
  * \@todo:
+ *  * Generate a slow path (similar to what is currently generated) and a fast
+ *     path checking that cyclesTo > sum of all this.tstates. In this case,
+ *     remove this.tstates > cyclesTo checks (@see http://robert.ocallahan.org/2010/11/implementing-high-performance-emulator_01.html).
+ *  * Wrap branches in while(1) loops and emit a `continue` when it calls the
+ *     same opcode as the current one (Thus avoiding infinite loops?).
  *  * Check if this.tstates > cyclesTo inside branches.
  *  * Inline more stuff (Non branch ending complex inst...).
  *  * Inline JR/JP/Call instructions as a condition. If no, continue the branch.
@@ -228,7 +233,6 @@ BlockBuilder.prototype.parseInst = function(opcode) {
 
 /**
  * Generate JavaScript code from an internal block object.
- * \@todo Pass indentation as a parameter.
  *
  * @param {Object} block
  * @param {string=} indent
