@@ -122,7 +122,7 @@ BlockBuilder.prototype.parseBranch = function(pc) {
     label: pc,
     insts: []
   };
-  var opcode;
+  var opcode = 0x00;
   var instruction_nb = 0;
 
   this.pc = pc;
