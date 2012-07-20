@@ -11,7 +11,7 @@
  *  * inline_ei_inst:
  *      Statically check this.EI_inst and don't test interrupt if true.
  *
- * \@todo:
+ * \@todo Implement the following optimizations:
  *  * Generate a slow path (similar to what is currently generated) and a fast
  *     path checking that cyclesTo > sum of all this.tstates. In this case,
  *     remove this.tstates > cyclesTo checks (@see http://robert.ocallahan.org/2010/11/implementing-high-performance-emulator_01.html).
@@ -29,6 +29,13 @@
  * @const
  */
 var MAX_INSTRUCTION_NB = 10;
+
+
+/**
+ * Size of each memory page (1K in this case).
+ * @type {number}
+ */
+var PAGE_SIZE = 0x400;
 
 
 /** @const */
@@ -88,6 +95,7 @@ var OP_STATES = [
  */
 var BlockBuilder = function(readMem) {
   this.readMem = readMem;
+  this.readMemLength = readMem.length * PAGE_SIZE;
 
   this.debugLevel = 0;
 
@@ -122,9 +130,9 @@ BlockBuilder.prototype.parseBranch = function(pc) {
   this.tstatesDecrementVal = 0;
 
   while (!this.isEndingInst(opcode) &&
-      this.pc < this.readMem.length &&
+      this.pc < this.readMemLength &&
       instruction_nb < MAX_INSTRUCTION_NB) {
-    opcode = this.readMem[this.pc];
+    opcode = this.readMem[this.pc >> 10][this.pc & 0x3FF];
     branch.insts.push(this.parseInst(opcode));
     instruction_nb++;
   }
@@ -159,13 +167,13 @@ BlockBuilder.prototype.parseInst = function(opcode) {
   this.tstatesDecrementVal += tstatesDecremetValue;
 
   if (this.debugLevel >= 1) {
-  preinst.push('l(\'pc: ' + this.toHex(this.pc) + ',\t' +
-      'opcode: ' + this.toHex(opcode) + ',\t' +
-      'tstates: \' + this.tstates + \',\t' +
-      'cyclesTo: \' + cyclesTo);');
+    preinst.push('l(\'pc: ' + this.toHex(this.pc) + ',\t' +
+        'opcode: ' + this.toHex(opcode) + ',\t' +
+        'tstates: \' + this.tstates + \',\t' +
+        'cyclesTo: \' + cyclesTo);');
   } else {
     preinst.push('// pc: ' + this.toHex(this.pc) + ',\t' +
-      'opcode: ' + this.toHex(opcode));
+        'opcode: ' + this.toHex(opcode));
   }
 
   // Inline EI_inst optimization.

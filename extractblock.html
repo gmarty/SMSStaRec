@@ -187,7 +187,7 @@ var loadROM = function() {
       //}
 
       dumper = new MemoryDumper(data);
-      compiler = new BlockBuilder(dumper.getMemory());
+      compiler = new BlockBuilder(dumper.getPagedMemory());
     }
   });
 };

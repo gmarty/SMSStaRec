@@ -19,6 +19,6 @@ if (argv.indexOf('-h') >= 0 || argv.indexOf('--help') >= 0 ||
       'Extract a block from a ROM at the specified address.\n');
 } else {
   var dumper = new MemoryDumper(fs.readFileSync(argv[2]));
-  var compiler = new BlockBuilder(dumper.getMemory());
+  var compiler = new BlockBuilder(dumper.getPagedMemory());
   console.log(compiler.blockToJS(compiler.parseBranch(argv[3])));
 }
