@@ -55,11 +55,11 @@ var CALLinst = [0xC4, 0xCC, 0xCD, 0xD4, 0xDC, 0xE4, 0xEC, 0xF4, 0xFC];
 
 var RETinst = [0xC0, 0xC8, 0xC9, 0xD0, 0xD8, 0xE0, 0xE8, 0xF0, 0xF8];
 
-var RSTInst = [0xC7, 0xCF, 0xD7, 0xDF, 0xE7, 0xEF, 0xF7, 0xFF];
+var DIinst = [0xF3];
 
 var miscInst = [0xDD, 0xFD, 0xED, 0x76];
 
-var endingInst = [].concat(JPinst, JRinst, CALLinst, RETinst, RSTInst, miscInst);
+var endingInst = [].concat(JPinst, JRinst, CALLinst, RETinst, DIinst, miscInst);
 
 // Side effect free opcodes.
 var emptyInst = [0x00, 0x40, 0x49, 0x52, 0x5B, 0x64, 0x6D, 0x7F];
@@ -216,6 +216,23 @@ BlockBuilder.prototype.parseInst = function(opcode) {
     }
     if (inst.indexOf('this.pc--') > 0) {
       //this.pc--;
+    }
+    if (inst.indexOf('this.pc = 0x00') > 0) {
+      this.pc = 0x00;
+    } else if (inst.indexOf('this.pc = 0x08') > 0) {
+      this.pc = 0x08;
+    } else if (inst.indexOf('this.pc = 0x10') > 0) {
+      this.pc = 0x10;
+    } else if (inst.indexOf('this.pc = 0x18') > 0) {
+      this.pc = 0x18;
+    } else if (inst.indexOf('this.pc = 0x20') > 0) {
+      this.pc = 0x20;
+    } else if (inst.indexOf('this.pc = 0x28') > 0) {
+      this.pc = 0x28;
+    } else if (inst.indexOf('this.pc = 0x30') > 0) {
+      this.pc = 0x30;
+    } else if (inst.indexOf('this.pc = 0x38') > 0) {
+      this.pc = 0x38;
     }
 
     // Inline EI_inst optimization.
